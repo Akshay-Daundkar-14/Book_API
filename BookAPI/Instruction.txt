@@ -1,0 +1,83 @@
+﻿
+
+Create Database BookDb
+
+Use BookDb
+
+-- Book Table
+
+Go
+Create Table Books(
+BookID int Identity(1,1) Primary Key,
+Title nvarchar(100) Not Null,
+Author nvarchar(100) Not Null,
+Genre nvarchar(50),
+PublishedYear INT,
+Price INT,
+CreatedDate DateTime Default GetDate(),
+UpdatedDate DateTime Default GetDate(),
+IsDeleted bit Default 0
+);
+
+Select * from Books
+
+-- Add Book 
+Go
+Create Proc AddBook
+@Title nvarchar(100),
+@Author nvarchar(100),
+@Genre nvarchar(50),
+@PublishedYear int,
+@Price Int
+as
+Begin 
+Insert into Books (Title,Author,Genre,PublishedYear,Price,CreatedDate,UpdatedDate,IsDeleted)
+Values(@Title,@Author,@Genre,@PublishedYear,@Price,GETDATE(),GETDATE(),0)
+End
+
+-- Get Books
+Go
+Create Procedure GetBooks
+as
+Begin
+Select * from Books Where IsDeleted = 0
+End
+
+exec GetBooks
+
+-- Update Book
+Go
+Create Proc UpdateBook
+@BookID int,
+@Title nvarchar(100),
+@Author nvarchar(100),
+@Genre nvarchar(50),
+@PublishedYear int,
+@Price Int
+as
+Begin 
+Update Books
+Set 
+Title = @Title,
+Author = @Author,
+Genre = @Genre,
+PublishedYear = @PublishedYear,
+Price =@Price,
+UpdatedDate = Getdate()
+Where BookId = @BookId And IsDeleted=0
+End
+
+-- Delete Book
+Go
+Create Procedure DeleteBook
+@BookID int
+as
+Begin 
+ Update Books
+ Set IsDeleted = 1, UpdatedDate=GETDATE()
+ Where BookID = @BookID
+End
+
+
+
+
