@@ -102,5 +102,46 @@ namespace BookAPI.Repository
             }
         }
 
+
+        public List<Book> GetBooks(string genre, string author, string sortColumn, string sortOrder)
+        {
+            var books = new List<Book>();
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(StoredProcNames.GetFilterBooks, conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Genre", genre );
+                    cmd.Parameters.AddWithValue("@Author", author);
+                    cmd.Parameters.AddWithValue("@SortColumn", sortColumn);
+                    cmd.Parameters.AddWithValue("@SortOrder", sortOrder);
+
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var book = new Book
+                            {
+                                BookID = (int)reader["BookID"],
+                                Title = (string)reader["Title"],
+                                Author = (string)reader["Author"],
+                                Genre = reader["Genre"] as string,
+                                PublishedYear = (int)reader["PublishedYear"],
+                                Price = (int)reader["Price"],
+                                CreatedDate = (DateTime)reader["CreatedDate"],
+                                UpdatedDate = (DateTime)reader["UpdatedDate"],
+                                IsDeleted = (bool)reader["IsDeleted"]
+                            };
+                            books.Add(book);
+                        }
+                    }
+                }
+            }
+
+            return books;
+        }
+
     }
 }

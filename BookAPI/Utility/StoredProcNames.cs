@@ -6,5 +6,6 @@
         public static string UpdateExistingBook{ get { return "UpdateBook"; }  }
         public static string GetAllBooks{ get { return "GetBooks"; }  }
         public static string DeleteExistingBook{ get { return "DeleteBook"; }  }
+        public static string GetFilterBooks { get { return "GetFilteredAndSortedBooks"; }  }
     }
 }
