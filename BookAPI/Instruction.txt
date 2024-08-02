@@ -79,5 +79,33 @@ Begin
 End
 
 
+-- Filter & Sort Books
 
+GO
+  Create PROCEDURE GetFilteredAndSortedBooks
+    @Genre NVARCHAR(50) = NULL,
+    @Author NVARCHAR(100) = NULL,
+    @SortColumn NVARCHAR(50) = 'Title',
+    @SortOrder NVARCHAR(4) = 'ASC'
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    SELECT [BookID], [Title], [Author], [Genre], [PublishedYear], [Price], [CreatedDate], [UpdatedDate], [IsDeleted]
+    FROM [BookDb].[dbo].[Books]
+    WHERE (@Genre IS NULL OR [Genre] = @Genre)
+      AND (@Author IS NULL OR [Author] = @Author)
+	  AND IsDeleted = 0
+    ORDER BY 
+        CASE WHEN @SortColumn = 'BookID' THEN [BookID] END,
+        CASE WHEN @SortColumn = 'Title' THEN [Title] END,
+        CASE WHEN @SortColumn = 'Author' THEN [Author] END,
+        CASE WHEN @SortColumn = 'Genre' THEN [Genre] END,
+        CASE WHEN @SortColumn = 'PublishedYear' THEN [PublishedYear] END,
+        CASE WHEN @SortColumn = 'Price' THEN [Price] END,
+        CASE WHEN @SortColumn = 'CreatedDate' THEN [CreatedDate] END,
+        CASE WHEN @SortColumn = 'UpdatedDate' THEN [UpdatedDate] END,
+        CASE WHEN @SortColumn = 'IsDeleted' THEN [IsDeleted] END
+    OFFSET 0 ROWS -- Optional: For pagination
+    FETCH NEXT 100 ROWS ONLY -- Optional: For pagination
+END
